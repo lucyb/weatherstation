@@ -7,6 +7,7 @@ from dash.dependencies import Input, Output
 from plotly.graph_objs import *
 import pandas as pd
 import datetime
+import os
 
 app = dash.Dash()
 
@@ -39,7 +40,7 @@ def display_total_graph(n):
             )
 
     layout = dict(
-            title='Dining Room Temperature',
+            title='Temperature',
             height=600,
             xaxis=dict(
                 rangeselector=dict(
@@ -66,17 +67,15 @@ def display_total_graph(n):
             )
 
 def fetch_data():
-    df = pd.read_csv("http://192.168.1.204:8000/temp.log",
+    df = pd.read_csv(get_temperature_log(),
          sep='\t',
          names=["Time", "Temp", "Temp (Smooth)"],
          parse_dates=["Time"])
     return df
 
-def get_todays_data(df):
-    today     = datetime.datetime.now()
-    yesterday = pd.to_timedelta("1day")
-    df.today  = df[df.Time > (today - yesterday)]
-    return df.today
+def get_temperature_log():
+    return os.getenv('TEMP_URL',
+            "http://192.168.1.204:8000/temp.log")
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.server.run(host='0.0.0.0')
