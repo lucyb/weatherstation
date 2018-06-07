@@ -20,11 +20,21 @@ app.layout = html.Div(children=[
         interval=1*20000,  # Milliseconds
         n_intervals=0),
 
+    #Display current temperature
+    html.Div(id='display-current-temp'),
+
     #Show timeseries of temperatures
     dcc.Graph(
         id='temperature-graph',
     ),
 ])
+
+@app.callback(Output('display-current-temp', 'children'),
+                   [Input('interval-component', 'n_intervals')])
+def display_current_temp(n):
+    df = fetch_data()
+    curr_temp = df.max().Temp
+    return u'Current Temperature {:.2f}\xb0c'.format(curr_temp)
 
 @app.callback(Output('temperature-graph', 'figure'),
                    [Input('interval-component', 'n_intervals')])
