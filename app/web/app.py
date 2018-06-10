@@ -33,7 +33,7 @@ app.layout = html.Div(children=[
                    [Input('interval-component', 'n_intervals')])
 def display_current_temp(n):
     df = fetch_data()
-    curr_temp = df.max().Temp
+    curr_temp = df.Temp.iloc[-1]
     return u'Current Temperature {:.2f}\xb0c'.format(curr_temp)
 
 @app.callback(Output('temperature-graph', 'figure'),
