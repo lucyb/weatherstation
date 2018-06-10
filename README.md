@@ -26,7 +26,9 @@ This is a UTC datetime and a temperature in degrees celsius, with tab separation
 Make a note of the URL for this log file.
 
 To start the dashboard, run:
+```
 docker run --name weather -d -p 5000:5000 -e TEMP_URL='{MY LOGFILE URL}' lucyb/weatherstation
+```
 
 Then access the dashboard in a browser, using the address http://localhost:5000
 
