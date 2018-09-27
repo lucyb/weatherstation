@@ -5,7 +5,7 @@ LABEL maintainer="LucyB"
 ENV APP_DIR /app
 
 # Install dependencies
-RUN apk add --update --no-cache python3-dev supervisor g++ && \
+RUN apk add --update --no-cache python3-dev supervisor g++ postgresql-dev musl-dev && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h && \
     pip3 install --upgrade pip && \
     pip3 install gunicorn && \

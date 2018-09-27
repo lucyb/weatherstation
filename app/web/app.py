@@ -9,6 +9,8 @@ import pandas as pd
 import datetime
 import os
 
+import database as db
+
 app = dash.Dash()
 
 app.layout = html.Div(children=[
@@ -20,8 +22,8 @@ app.layout = html.Div(children=[
         interval=1*20000,  # Milliseconds
         n_intervals=0),
 
-    #Display current temperature
-    html.Div(id='display-current-temp'),
+    #Display current temperatures
+    html.Div([html.H4(children=u'Current temperature (\xb0c)'), html.Table(id='display-current-temp')]),
 
     #Show timeseries of temperatures
     dcc.Graph(
@@ -29,17 +31,16 @@ app.layout = html.Div(children=[
     ),
 ])
 
+
 @app.callback(Output('display-current-temp', 'children'),
                    [Input('interval-component', 'n_intervals')])
 def display_current_temp(n):
-    df = fetch_data()
-    curr_temp = df.Temp.iloc[-1]
-    return u'Current Temperature {:.2f}\xb0c'.format(curr_temp)
+    return _display_table(db.current_temp())
 
 @app.callback(Output('temperature-graph', 'figure'),
                    [Input('interval-component', 'n_intervals')])
 def display_total_graph(n):
-    df = fetch_data()
+    df = db.all_temp_data(1)
 
     timeseries = go.Scatter(
             x = df['Time'],
@@ -76,16 +77,18 @@ def display_total_graph(n):
             layout=layout,
             )
 
-def fetch_data():
-    df = pd.read_csv(get_temperature_log(),
-         sep='\t',
-         names=["Time", "Temp", "Temp (Smooth)"],
-         parse_dates=["Time"])
-    return df
 
-def get_temperature_log():
-    return os.getenv('TEMP_URL',
-            "http://192.168.1.204:8000/temp.log")
+def _display_table(dataframe, max_rows=1000):
+    return html.Table(
+        # Header
+        [html.Tr([html.Th(col) for col in dataframe.columns])] +
+
+        # Body
+        [html.Tr([
+            html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
+        ]) for i in range(min(len(dataframe), max_rows))]
+    )
 
 if __name__ == '__main__':
     app.server.run(host='0.0.0.0')
+
