@@ -5,7 +5,7 @@ LABEL maintainer="LucyB"
 ENV APP_DIR /app
 
 # Install dependencies
-RUN apk add --update --no-cache python3-dev supervisor g++ && \
+RUN apk add --update --no-cache python3-dev supervisor g++ postgresql-dev musl-dev && \
     ln -s /usr/include/locale.h /usr/include/xlocale.h && \
     pip3 install --upgrade pip && \
     pip3 install gunicorn && \
@@ -16,12 +16,15 @@ RUN apk add --update --no-cache python3-dev supervisor g++ && \
     mkdir -p ${APP_DIR}/logs && \
     rm -rf /var/cache/apk/*
 
+# Install flask/Dash application dependancies
+COPY ./app/requirements.txt ${APP_DIR}/
+RUN pip3 --no-cache-dir install -r ${APP_DIR}/requirements.txt
+
+# Copy config
+COPY ./app/conf/supervisor_dash.ini /etc/supervisord.conf
+
 # copy app files
 COPY ./app ${APP_DIR}
-
-# Setup flask/Dash application
-RUN pip3 --no-cache-dir install -r ${APP_DIR}/requirements.txt && \
-    echo "files = ${APP_DIR}/conf/*.ini" >> /etc/supervisord.conf
 
 EXPOSE 5000
 

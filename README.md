@@ -10,38 +10,43 @@ It's currently really basic, so only provides temperature readouts.
 
 weatherstation is written using python and dash, but if you have docker installed you don't need to worry about that.
 
-You'll need to ensure your weather station is providing temperatures via a log in the format:
+You'll need to ensure your weather station is logging temperatures into a database with time and temp columns, like this:
 
 ```
-2018-06-03T14:45:35	21.312
-2018-06-03T14:47:57	21.312
-2018-06-03T14:50:19	21.375
-2018-06-03T14:52:41	21.312
-2018-06-03T14:55:03	21.312
-2018-06-03T14:57:25	21.312
-2018-06-03T14:59:48	21.375
+time | temp
+----------
+2018-06-03T14:45:35|21.312
+2018-06-03T14:47:57|21.312
+2018-06-03T14:50:19|21.375
+2018-06-03T14:52:41|21.312
+2018-06-03T14:55:03|21.312
+2018-06-03T14:57:25|21.312
+2018-06-03T14:59:48|21.375
 ```
-This is a UTC datetime and a temperature in degrees celsius, with tab separation.
+This is a UTC datetime and a temperature in degrees celsius as a numeric(5,3)
 
-Make a note of the URL for this log file.
+Add the database connection details to a file called database.ini (see the example)
 
-To start the dashboard, run:
+To start the dashboard run:
 ```
-docker run --name weather -d -p 5000:5000 -e TEMP_URL='{MY LOGFILE URL}' lucyb/weatherstation
+docker run --name weather -d -p 5000:5000 -v database.ini:/app/conf/database.ini lucyb/weatherstation
 ```
 
 Then access the dashboard in a browser, using the address http://localhost:5000
 
 ## Building it yourself
 
-To build your own docker image, checkout this code and run:
+To build your own docker image:
+
+1. Checkout this code 
+2. Add the connection details to the database in app/database.ini
+3. Then run:
 ```
 docker build . -t weatherstation
 ```
 
-To run it without docker:
+To build it without docker:
 ```
-TEMP_URL='{MY LOGFILE URL}'
 cd app
 pip3 -r requirements.txt
 cd web
