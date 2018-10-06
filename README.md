@@ -12,7 +12,7 @@ Below we refer to the bottom part of the graph as baseline and to the upper part
 
 The highlighted area in the bottom part represents data that are not usable and shown in the main graph. The right area in the bottom part, close to the highlighted one, is what is shown expanded in the main graph.
 
-The x-axis represents the timestamp with 5-minute resolution whereas the y-axis stands for the temperatures in Celcius. There is the option to output daily or weekly data or all the available data from the date of ___? 2018.
+The x-axis represents the timestamp with 5-minute resolution whereas the y-axis stands for the temperatures in Celcius. There is the option to output daily or weekly data or all the available data collected so far.
 
 The present graph represents monitored data from one sensor in the house. Measurements are taken 12 times within the hour, i.e. every 5 minutes.
 
@@ -50,7 +50,7 @@ Then access the dashboard in a browser, using the address http://localhost:5000
 To build it without docker:
 ```
 cd app
-pip3 -r requirements.txt
+pip3 install -r requirements.txt
 cd web
 python app.py
 ```
@@ -69,6 +69,6 @@ docker build . -t weatherstation
 ## Future work
 In the future:
 
-1. It should be interesting to monitor and also output humidity levels. 
+1. It would be interesting to monitor and also output humidity levels. 
 2. Another important part of the work will focus on analysing the monitored data and also forecasting temperatures and humidity levels for the next hour (short-term forecasting). 
 3. Output the monitored data from more sensors.
