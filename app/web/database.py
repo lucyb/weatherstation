@@ -3,10 +3,21 @@ import pandas as pd
 
 def sensor_list():
     conn = _connection_string()
-    #sql = 'SELECT sensor_id, name, max(time_to) FROM sensor_locations GROUP BY sensor_id, name'
-    sql = 'SELECT id, sensor as name FROM sensors'
+    sql = ('SELECT sensor_id as id, name '
+            'FROM sensor_locations '
+            'WHERE time_to is NULL '
+            'GROUP BY sensor_id, name')
     return pd.read_sql(sql, conn)
 
+def temp_data_last_day(id):
+    conn = _connection_string()
+    sql = ('SELECT time as "Time", reading as "Temp" '
+            'FROM sensor_readings '
+            f'WHERE sensor_id={id} '
+            'AND time >= NOW() - \'1 day\'::INTERVAL '
+            'AND measure_type = \'temperature\' '
+            'ORDER BY time')
+    return pd.read_sql(sql, conn)
 
 def all_temp_data(id):
     conn = _connection_string()
