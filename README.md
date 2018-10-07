@@ -40,7 +40,7 @@ Add the database connection details to a file called database.ini (see the examp
 To start the dashboard run:
 
 ```
-docker run --name weather -d -p 5000:5000 -v database.ini:/app/conf/database.ini lucyb/weatherstation
+docker run --name weather -d -p 5000:5000 -v $(pwd)/database.ini:/app/conf/database.ini lucyb/weatherstation
 ```
 
 Then access the dashboard in a browser, using the address http://localhost:5000
