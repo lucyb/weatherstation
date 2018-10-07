@@ -9,19 +9,23 @@ def sensor_list():
             'GROUP BY sensor_id, name')
     return pd.read_sql(sql, conn)
 
-def temp_data_last_day(id):
+def temp_data_last_day(id, measure_type):
     conn = _connection_string()
     sql = ('SELECT time as "Time", reading as "Temp" '
             'FROM sensor_readings '
             f'WHERE sensor_id={id} '
             'AND time >= NOW() - \'1 day\'::INTERVAL '
-            'AND measure_type = \'temperature\' '
+            f'AND measure_type = \'{measure_type}\' '
             'ORDER BY time')
     return pd.read_sql(sql, conn)
 
 def all_temp_data(id):
     conn = _connection_string()
-    sql = f'SELECT time as "Time", reading as "Temp" FROM sensor_readings WHERE sensor_id={id} ORDER BY time'
+    sql = ('SELECT time as "Time", reading as "Temp" '
+            'FROM sensor_readings '
+            f'WHERE sensor_id={id} '
+            'AND measure_type =\'temperature\' '
+            'ORDER BY time')
     return pd.read_sql(sql, conn)
 
 
@@ -33,15 +37,15 @@ def current_temp(id=None):
         return df.Temp.iloc[0]
 
     sql = ('SELECT s.sensor, r1.reading '
-    'FROM sensor_readings r1 '
-    'INNER JOIN sensors s '
-    'ON s.id = r1.sensor_id '
-    'INNER JOIN (SELECT sensor_id, MAX(time) AS time '
-    'FROM sensor_readings '
-    'WHERE measure_type = \'temperature\' '
-    'GROUP BY sensor_id) r2 '
-    'ON r1.sensor_id = r2.sensor_id AND r1.time = r2.time '
-    'WHERE r1.measure_type = \'temperature\'')
+            'FROM sensor_readings r1 '
+            'INNER JOIN sensors s '
+            'ON s.id = r1.sensor_id '
+            'INNER JOIN (SELECT sensor_id, MAX(time) AS time '
+            'FROM sensor_readings '
+            'WHERE measure_type = \'temperature\' '
+            'GROUP BY sensor_id) r2 '
+            'ON r1.sensor_id = r2.sensor_id AND r1.time = r2.time '
+            'WHERE r1.measure_type = \'temperature\'')
 
     df = pd.read_sql(sql, conn)
     return df
