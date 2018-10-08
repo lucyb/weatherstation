@@ -11,11 +11,26 @@ import os
 
 import database as db
 
+class Sensors:
+
+    TEMPERATURE = 'temperature'
+    HUMIDITY = 'humidity'
+    BATTERY = 'battery'
+
+    def __init__(self):
+        self._sensors = None
+
+    @property
+    def sensors(self):
+        if not self._sensors:
+            self._sensors = db.sensor_list()
+        return self._sensors
+
 class Dashboard:
 
-    def serve_layout():
+    def serve_layout(self):
         return html.Div(children=[
-            html.H1(children='The Weather Station'),
+            html.H2(children='The Weather Station'),
 
             #Auto-refresh
             dcc.Interval(
@@ -29,12 +44,14 @@ class Dashboard:
             #Show timeseries of temperatures
             dcc.Graph(id='temperature-graph'),
 
+            #Show timeseries of humidity
+            dcc.Graph(id='humidity-graph'),
         ])
+
 
 app = dash.Dash()
 #app.config.supress_callback_exceptions = True
-app.layout = Dashboard.serve_layout
-
+app.layout = Dashboard().serve_layout
 
 @app.callback(Output('display-current-temp', 'children'),
                    [Input('interval-component', 'n_intervals')])
@@ -43,19 +60,32 @@ def display_current_temp(n):
 
 @app.callback(Output('temperature-graph', 'figure'),
                    [Input('interval-component', 'n_intervals')])
-def display_total_graph(n):
-    return _build_graph()
+def display_temperature_graph(n):
+    sensors = Sensors().sensors
 
-def _build_graph():
-    sensors = db.sensor_list()
-    
     timeseries = []
-    for index, sensor in sensors.iterrows():
-        timeseries.append(_build_timeseries(sensor['id'], sensor['name']))
+    for _, sensor in sensors.iterrows():
+        df = db.temp_data_last_day(sensor['id'], Sensors.TEMPERATURE)
+        timeseries.append(_build_timeseries(df, sensor['name']))
 
+    return _build_graph('Today\'s Temperature', timeseries)
+
+@app.callback(Output('humidity-graph', 'figure'),
+                   [Input('interval-component', 'n_intervals')])
+def display_humidity_graph(n):
+    sensors = Sensors().sensors
+
+    timeseries = []
+    for _, sensor in sensors.iterrows():
+        df = db.temp_data_last_day(sensor['id'], Sensors.HUMIDITY)
+        timeseries.append(_build_timeseries(df, sensor['name']))
+
+    return _build_graph('Today\'s Humidity', timeseries)
+
+def _build_graph(title, timeseries):
     layout = dict(
-            title='Temperature',
-            height=600,
+            title=title,
+            height=400,
             xaxis=dict(
                 rangeselector=dict(
                     buttons=list([
@@ -66,7 +96,6 @@ def _build_graph():
                         dict(step='all'),
                     ])
                 ),
-                rangeslider=dict(),
                 type='date'
             )
     )
@@ -76,9 +105,7 @@ def _build_graph():
             layout=layout,
             )
 
-def _build_timeseries(id, name):    
-    df = db.temp_data_last_day(id)
-
+def _build_timeseries(df, name):
     timeseries = go.Scatter(
             x = df['Time'],
             y = df['Temp'],
