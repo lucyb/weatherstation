@@ -93,6 +93,10 @@ def _build_graph(title, timeseries):
                              label='last hour',
                              step='hour',
                              stepmode='backward'),
+                        dict(count=24,
+                             label='last day',
+                             step='hour',
+                             stepmode='backward'),
                         dict(step='all'),
                     ])
                 ),
