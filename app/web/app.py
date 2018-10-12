@@ -104,7 +104,8 @@ def _build_graph(title, timeseries):
                              label='last day',
                              step='hour',
                              stepmode='backward'),
-                        dict(step='all'),
+                        dict(step='all',
+                             label='last 3 days'),
                     ])
                 ),
                 type='date'
