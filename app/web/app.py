@@ -28,7 +28,7 @@ class Sensors:
 
 class Dashboard:
 
-    def serve_layout(self):
+    def serve_layout():
         return html.Div(children=[
             html.H2(children='The Weather Station'),
 
@@ -39,7 +39,7 @@ class Dashboard:
                 n_intervals=0),
 
             #Display current temperatures
-            html.Div([html.H4(children=u'Current temperature (\xb0c)'), html.Table(id='display-current-temp')]),
+            html.Div([html.Table(id='display-current-temp')]),
 
             #Show timeseries of temperatures
             dcc.Graph(id='temperature-graph'),
@@ -51,12 +51,19 @@ class Dashboard:
 
 app = dash.Dash()
 #app.config.supress_callback_exceptions = True
-app.layout = Dashboard().serve_layout
+app.layout = Dashboard.serve_layout
 
 @app.callback(Output('display-current-temp', 'children'),
                    [Input('interval-component', 'n_intervals')])
 def display_current_temp(n):
-    return _display_table(db.current_temp())
+    sensors = Sensors().sensors
+    readings = db.current_reading(list(sensors['id']))
+    result = []
+    for _, sensor in sensors.iterrows():
+        result.append(html.Div(sensor['name']))
+        rows = readings.loc[readings['id'] == sensor['id']]
+        result.append(_display_table(rows))
+    return result
 
 @app.callback(Output('temperature-graph', 'figure'),
                    [Input('interval-component', 'n_intervals')])
