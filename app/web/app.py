@@ -52,7 +52,6 @@ class Dashboard:
 
 
 app = dash.Dash()
-#app.config.supress_callback_exceptions = True
 app.layout = Dashboard.serve_layout
 
 @app.callback(Output('display-current-temp', 'children'),

@@ -9,7 +9,6 @@ def sensor_list():
             'GROUP BY sensor_id, name')
     return pd.read_sql(sql, conn)
 
-
 def temp_data_last_day(id, measure_type):
     conn = _connection_string()
     sql = ('SELECT time as "Time", reading as "Temp" '
