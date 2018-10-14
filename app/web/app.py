@@ -29,6 +29,8 @@ class Sensors:
 class Dashboard:
 
     def serve_layout():
+        sensors_style = {'display':'grid', 'grid-template-columns':'repeat(auto-fill, 12em)', 'column-gap':'5rem', 'margin-left':'60px'}
+
         return html.Div(children=[
             html.H2(children='The Weather Station'),
 
@@ -39,7 +41,7 @@ class Dashboard:
                 n_intervals=0),
 
             #Display current temperatures
-            html.Div([html.Table(id='display-current-temp')]),
+            html.Div(id='display-current-temp', style=sensors_style),
 
             #Show timeseries of temperatures
             dcc.Graph(id='temperature-graph'),
@@ -60,9 +62,8 @@ def display_current_temp(n):
     readings = db.current_reading(list(sensors['id']))
     result = []
     for _, sensor in sensors.iterrows():
-        result.append(html.Div(sensor['name']))
         rows = readings.loc[readings['id'] == sensor['id']]
-        result.append(_display_table(rows))
+        result.append(_display_sensor(sensor['name'], rows))
     return result
 
 @app.callback(Output('temperature-graph', 'figure'),
@@ -127,16 +128,23 @@ def _build_timeseries(df, name):
 
     return timeseries
 
-def _display_table(dataframe, max_rows=1000):
-    return html.Table(
-        # Header
-        [html.Tr([html.Th(col) for col in dataframe.columns])] +
+def _display_sensor(name, df):
+    style_name = {'grid-column-end':'span 2', 'font-weight':'bold'}
+    style_temperature = {'grid-column-end':'span 3', 'text-align':'center', 'font-size':'175%'}
+    style_humidity = {'grid-column-end':'span 3','text-align':'center'}
 
-        # Body
-        [html.Tr([
-            html.Td(dataframe.iloc[i][col]) for col in dataframe.columns
-        ]) for i in range(min(len(dataframe), max_rows))]
-    )
+    temperature = u'{}\u2103'.format(df.iloc[0]['reading'])
+    humidity = '{}%'.format(df.iloc[1]['reading'])
+    battery = '{}%'.format(df.iloc[2]['reading'])
+
+    readings = html.Div([
+        html.Div(name, style=style_name), 
+        html.Div(battery),
+        html.Div(temperature, style=style_temperature),
+        html.Div(humidity, style=style_humidity)
+        ], style={'display':'grid', 'grid-template-columns':'1fr 2fr 1fr', 'background':'lightgray', 'padding':'5px'})
+
+    return readings
 
 if __name__ == '__main__':
     app.server.run(host='0.0.0.0')
