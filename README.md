@@ -2,23 +2,19 @@
 
 weatherstation is a python-based application that provides a dashboard showing output from multiple temperature sensors located in the house. 
 
-It currently has the capability of monitoring and outputing temperature data from the sensors but the application has the potential to be extend to forecasting as well.
+It currently has the capability of monitoring and outputing temperature data from the sensors but the application has the potential to be extended to forecasting as well.
 
 ![Dashboard screenshot](screenshot.png)
 
 Figure 1: Temperature time series from different sensors within the house. Time resolution is 5 minutes.
 
-Below we refer to the bottom part of the graph as baseline and to the upper part as the main graph. 
+The x-axis represents the timestamp with 5-minute resolution whereas the y-axis stands for the temperatures in Celcius. There is the option to display data from the last three days (default), last day and last hour.
 
-The highlighted area in the bottom part represents data that are not usable and shown in the main graph. The right area in the bottom part, close to the highlighted one, is what is shown expanded in the main graph.
-
-The x-axis represents the timestamp with 5-minute resolution whereas the y-axis stands for the temperatures in Celcius. There is the option to output daily or weekly data or all the available data collected so far.
-
-The present graph represents monitored data from one sensor in the house. Measurements are taken 12 times within the hour, i.e. every 5 minutes.
+The present graph represents monitored data from all sensors in the house. Measurements are taken 12 times within the hour, i.e. every 5 minutes.
 
 ## How to setup
 
-weatherstation is written using python and an interactive library dash to show the output. If you have docker already installed, you don't need to worry about python installation.
+weatherstation is written using python and uses a library called dash, which provides interactive plot.ly graphs to show the output. If you have docker already installed, you don't need to worry about python installation.
 
 You'll need to ensure your weather station is logging temperatures into a database with time and temp columns, like this:
 
@@ -69,6 +65,6 @@ docker build . -t weatherstation
 ## Future work
 In the future:
 
-1. It would be interesting to monitor and also output humidity levels. 
+1. Display more historical data from each sensor.
 2. Another important part of the work will focus on analysing the monitored data and also forecasting temperatures and humidity levels for the next hour (short-term forecasting). 
 3. Output the monitored data from more sensors.
