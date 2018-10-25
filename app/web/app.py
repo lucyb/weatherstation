@@ -35,7 +35,7 @@ class Dashboard:
             #Auto-refresh
             dcc.Interval(
                 id='interval-component',
-                interval=1*20000,  # Milliseconds
+                interval=1*120000,  # Milliseconds
                 n_intervals=0),
 
             #Display current temperatures
