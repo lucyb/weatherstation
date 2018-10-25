@@ -9,9 +9,10 @@ def sensor_list():
             'GROUP BY sensor_id, name')
     return pd.read_sql(sql, conn)
 
-def temp_data_last_day(id, measure_type):
+
+def recent_sensor_data(id, measure_type):
     conn = _connection_string()
-    sql = ('SELECT time as "Time", reading as "Temp" '
+    sql = (f'SELECT time as "Time", reading as "{measure_type}" '
             'FROM sensor_readings '
             f'WHERE sensor_id={id} '
             'AND time >= NOW() - \'3 days\'::INTERVAL '
