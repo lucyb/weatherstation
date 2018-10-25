@@ -32,8 +32,6 @@ class Dashboard:
         sensors_style = {'display':'grid', 'grid-template-columns':'repeat(auto-fill, 12em)', 'column-gap':'5rem', 'margin-left':'60px'}
 
         return html.Div(children=[
-            html.H2(children='The Weather Station'),
-
             #Auto-refresh
             dcc.Interval(
                 id='interval-component',
@@ -75,7 +73,7 @@ def display_temperature_graph(n):
         df = db.temp_data_last_day(sensor['id'], Sensors.TEMPERATURE)
         timeseries.append(_build_timeseries(df, sensor['name']))
 
-    return _build_graph('Today\'s Temperature', timeseries)
+    return _build_graph('Temperature', timeseries)
 
 @app.callback(Output('humidity-graph', 'figure'),
                    [Input('interval-component', 'n_intervals')])
@@ -87,7 +85,7 @@ def display_humidity_graph(n):
         df = db.temp_data_last_day(sensor['id'], Sensors.HUMIDITY)
         timeseries.append(_build_timeseries(df, sensor['name']))
 
-    return _build_graph('Today\'s Humidity', timeseries)
+    return _build_graph('Humidity', timeseries)
 
 def _build_graph(title, timeseries):
     layout = dict(
