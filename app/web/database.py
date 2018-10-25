@@ -20,16 +20,6 @@ def temp_data_last_day(id, measure_type):
     return pd.read_sql(sql, conn)
 
 
-def all_temp_data(id):
-    conn = _connection_string()
-    sql = ('SELECT time as "Time", reading as "Temp" '
-            'FROM sensor_readings '
-            f'WHERE sensor_id={id} '
-            'AND measure_type =\'temperature\' '
-            'ORDER BY time')
-    return pd.read_sql(sql, conn)
-
-
 def current_reading(ids=[]):
     sensor_ids = ','.join(map(str,ids))
     conn = _connection_string()
