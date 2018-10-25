@@ -70,8 +70,10 @@ def display_temperature_graph(n):
 
     timeseries = []
     for _, sensor in sensors.iterrows():
-        df = db.temp_data_last_day(sensor['id'], Sensors.TEMPERATURE)
-        timeseries.append(_build_timeseries(df, sensor['name']))
+        df = db.recent_sensor_data(sensor['id'], Sensors.TEMPERATURE)
+        timeseries.append(_build_timeseries(df,
+                                            sensor['name'],
+                                            Sensors.TEMPERATURE))
 
     return _build_graph('Temperature', timeseries)
 
@@ -82,8 +84,10 @@ def display_humidity_graph(n):
 
     timeseries = []
     for _, sensor in sensors.iterrows():
-        df = db.temp_data_last_day(sensor['id'], Sensors.HUMIDITY)
-        timeseries.append(_build_timeseries(df, sensor['name']))
+        df = db.recent_sensor_data(sensor['id'], Sensors.HUMIDITY)
+        timeseries.append(_build_timeseries(df,
+                                            sensor['name'],
+                                            Sensors.HUMIDITY))
 
     return _build_graph('Humidity', timeseries)
 
@@ -115,10 +119,10 @@ def _build_graph(title, timeseries):
             layout=layout,
             )
 
-def _build_timeseries(df, name):
+def _build_timeseries(df, name, reading_type):
     timeseries = go.Scatter(
             x = df['Time'],
-            y = df['Temp'],
+            y = df[reading_type],
             name = name,
             opacity = 0.8
             )
